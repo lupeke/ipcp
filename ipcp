@@ -1,0 +1,34 @@
+#!/bin/bash
+
+os=$(uname -s)
+bg="\033[48;5;134m"
+fg="\033[37m"
+color="\033[38;5;134m"
+reset="\033[0m"
+
+get_ip_address() {
+  if [[ "$os" == "Linux" ]]; then
+    ip addr show | grep 'inet ' | awk 'NR==2{print $2}' | cut -d '/' -f1
+  elif [[ "$os" == "Darwin" ]]; then
+    ifconfig en0 | grep 'inet ' | awk '{print $2}'
+  fi
+}
+
+if [[ "$os" == "Linux" || "$os" == "Darwin" ]]; then
+  ip_address=$(get_ip_address)
+else
+  echo "info: unsupported operating system"
+  exit 1
+fi
+
+echo -e "${bg}${fg}${ip_address}${reset}${color} ✔︎${reset}"
+
+if [[ "$os" == "Linux" ]]; then
+  if ! which xclip > /dev/null 2>&1; then
+    echo "warn: xclip not found"
+  else 
+    xclip -echo "$ip_address"
+  fi
+elif [[ "$os" == "Darwin" ]]; then
+  pbcopy <<< "$ip_address"
+fi
