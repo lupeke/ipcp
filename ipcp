@@ -27,7 +27,7 @@ if [[ "$os" == "Linux" ]]; then
   if ! which xclip > /dev/null 2>&1; then
     echo "warn: xclip not found"
   else 
-    xclip -echo "$ip_address"
+    echo "$ip_address" | xclip -selection clipboard
   fi
 elif [[ "$os" == "Darwin" ]]; then
   pbcopy <<< "$ip_address"
